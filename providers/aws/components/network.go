@@ -4,12 +4,19 @@
 
 package components
 
-import "github.com/r3labs/graph"
+import (
+	"errors"
+	"net"
+	"reflect"
+
+	"github.com/r3labs/graph"
+)
 
 // Network : Mapping of a network component
 type Network struct {
 	ProviderType     string            `json:"_type"`
 	ComponentType    string            `json:"_component"`
+	ComponentID      string            `json:"_component_id"`
 	State            string            `json:"_state"`
 	Action           string            `json:"_action"`
 	NetworkAWSID     string            `json:"network_aws_id"`
@@ -23,6 +30,7 @@ type Network struct {
 	DatacenterRegion string            `json:"datacenter_region"`
 	AccessKeyID      string            `json:"aws_access_key_id"`
 	SecretAccessKey  string            `json:"aws_secret_access_key"`
+	Vpc              string            `json:"vpc"`
 	VpcID            string            `json:"vpc_id"`
 	Service          string            `json:"service"`
 	Status           string            `json:"status"`
@@ -31,15 +39,16 @@ type Network struct {
 
 // GetID : returns the component's ID
 func (n *Network) GetID() string {
-	return n.ComponentType + "::" + n.Name
+	return n.ComponentID
 }
 
 // GetName returns a components name
-func (n Network) GetName() string {
+func (n *Network) GetName() string {
 	return n.Name
 }
 
-func (n Network) GetProvider() string {
+// GetProvider : returns the provider type
+func (n *Network) GetProvider() string {
 	return n.ProviderType
 }
 
@@ -48,53 +57,102 @@ func (n *Network) GetProviderID() string {
 	return n.NetworkAWSID
 }
 
-func (n Network) GetType() string {
+// GetType : returns the type of the component
+func (n *Network) GetType() string {
 	return n.ComponentType
 }
 
-func (n Network) GetState() string {
+// GetState : returns the state of the component
+func (n *Network) GetState() string {
 	return n.State
 }
 
-func (n Network) SetState(s string) {
+// SetState : sets the state of the component
+func (n *Network) SetState(s string) {
 	n.State = s
 }
 
-func (n Network) GetAction() string {
+// GetAction : returns the action of the component
+func (n *Network) GetAction() string {
 	return n.Action
 }
 
-func (n Network) SetAction(s string) {
+// SetAction : Sets the action of the component
+func (n *Network) SetAction(s string) {
 	n.Action = s
 }
 
-func (n Network) GetGroup() string {
+// GetGroup : returns the components group
+func (n *Network) GetGroup() string {
 	return ""
 }
 
 // GetTags returns a components tags
-func (n Network) GetTags() map[string]string {
+func (n *Network) GetTags() map[string]string {
 	return n.Tags
 }
 
-func (n Network) Diff(c graph.Vertex) {
-
-}
-
-func (n *Network) Update(c graph.Vertex) bool {
-	cn := c.(Network)
+// Diff : diff's the component against another component of the same type
+func (n *Network) Diff(c graph.Component) bool {
+	cn, ok := c.(*Network)
+	if ok {
+		return !reflect.DeepEqual(n.Tags, cn.Tags)
+	}
 
 	return false
 }
 
-func (n *Network) Rebuild() {
+// Update : updates the provider returned values of a component
+func (n *Network) Update(c graph.Component) {
+	cn, ok := c.(*Network)
+	if ok {
+		n.NetworkAWSID = cn.NetworkAWSID
+		n.AvailabilityZone = cn.AvailabilityZone
+	}
 
+	n.setDefaultVariables()
 }
 
-func (n Network) Dependencies() []string {
-	return []string{}
+// Rebuild : rebuilds the component's internal state, such as templated values
+func (n *Network) Rebuild(g *graph.Graph) {
+	n.setDefaultVariables()
 }
 
+// Dependencies : returns a list of component id's upon which the component depends
+func (n *Network) Dependencies() []string {
+	return []string{"vpc::" + n.Vpc}
+}
+
+// Validate : validates the components values
+func (n *Network) Validate() error {
+	_, _, err := net.ParseCIDR(n.Subnet)
+	if err != nil {
+		return errors.New("Network CIDR is not valid")
+	}
+
+	if n.Name == "" {
+		return errors.New("Network name should not be null")
+	}
+
+	if n.IsPublic && n.Tags["ernest.nat_gateway"] != "" {
+		return errors.New("Public Network should not specify a nat gateway")
+	}
+
+	return nil
+}
+
+// IsStateful : returns true if the component needs to be actioned to be removed.
 func (n *Network) IsStateful() bool {
 	return true
+}
+
+func (n *Network) setDefaultVariables() {
+	n.ComponentType = "network"
+	n.ComponentID = "network::" + n.Name
+	n.ProviderType = PROVIDERTYPE
+	n.DatacenterName = DATACENTERNAME
+	n.DatacenterType = DATACENTERTYPE
+	n.DatacenterRegion = DATACENTERREGION
+	n.AccessKeyID = ACCESSKEYID
+	n.SecretAccessKey = SECRETACCESSKEY
 }

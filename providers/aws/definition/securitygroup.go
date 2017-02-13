@@ -7,6 +7,7 @@ package definition
 // SecurityGroup ...
 type SecurityGroup struct {
 	Name    string              `json:"name"`
+	Vpc     string              `json:"vpc"`
 	Ingress []SecurityGroupRule `json:"ingress"`
 	Egress  []SecurityGroupRule `json:"egress"`
 }
