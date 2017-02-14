@@ -4,7 +4,11 @@
 
 package definition
 
-import "encoding/json"
+import (
+	"encoding/json"
+
+	"github.com/mitchellh/mapstructure"
+)
 
 // Definition ...
 type Definition struct {
@@ -28,14 +32,12 @@ func New() *Definition {
 	return &Definition{}
 }
 
-// FromJSON creates a definition from json
-func FromJSON(data []byte) (*Definition, error) {
-	var d Definition
+// LoadJSON unmarshals raw json data onto the defintion
+func (d *Definition) LoadJSON(data []byte) error {
+	return json.Unmarshal(data, d)
+}
 
-	err := json.Unmarshal(data, d)
-	if err != nil {
-		return nil, err
-	}
-
-	return &d, nil
+// LoadMap converts a generic definition from a map[string]interface into an aws definition
+func (d *Definition) LoadMap(i map[string]interface{}) error {
+	return mapstructure.Decode(i, d)
 }

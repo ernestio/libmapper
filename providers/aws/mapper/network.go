@@ -8,17 +8,22 @@ import "github.com/ernestio/libmapper/providers/aws/components"
 import "github.com/ernestio/libmapper/providers/aws/definition"
 
 // MapNetworks ...
-func MapNetworks(d definition.Definition) []*components.Network {
+func MapNetworks(d *definition.Definition) []*components.Network {
 	var ns []*components.Network
 
 	for _, network := range d.Networks {
-		ns = append(ns, &components.Network{
+		cn := &components.Network{
 			Name:             network.Name,
 			Subnet:           network.Subnet,
 			IsPublic:         network.Public,
 			AvailabilityZone: network.AvailabilityZone,
+			Vpc:              network.VPC,
 			Tags:             mapNetworkTags(network.Name, d.Name, network.NatGateway),
-		})
+		}
+
+		cn.SetDefaultVariables()
+
+		ns = append(ns, cn)
 	}
 
 	return ns

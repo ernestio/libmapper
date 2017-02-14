@@ -26,6 +26,12 @@ const (
 	TARGETANY = "any"
 	// AWSMAXNAME : Maximum size of an aws character
 	AWSMAXNAME = 50
+
+	TYPEVPC           = "vpc"
+	TYPENETWORK       = "network"
+	TYPEINSTANCE      = "instance"
+	TYPESECURITYGROUP = "security_group"
+	TYPEDELIMITER     = "::"
 )
 
 func validateProtocol(p string) error {

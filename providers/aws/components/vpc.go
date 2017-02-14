@@ -8,24 +8,22 @@ import "github.com/r3labs/graph"
 
 // Vpc : mapping of an instance component
 type Vpc struct {
-	ProviderType     string `json:"_type"`
-	ComponentType    string `json:"_component"`
-	ComponentID      string `json:"_component_id"`
-	State            string `json:"_state"`
-	Action           string `json:"_action"`
-	VpcAWSID         string `json:"vpc_aws_id"`
-	Name             string `json:"name"`
-	Subnet           string `json:"subnet"`
-	AutoRemove       bool   `json:"auto_remove"`
-	Tags             map[string]string
-	DatacenterType   string `json:"datacenter_type,omitempty"`
-	DatacenterName   string `json:"datacenter_name,omitempty"`
-	DatacenterRegion string `json:"datacenter_region"`
-	AccessKeyID      string `json:"aws_access_key_id"`
-	SecretAccessKey  string `json:"aws_secret_access_key"`
-	Service          string `json:"service"`
-	Status           string `json:"status"`
-	Exists           bool
+	ProviderType     string            `json:"_type"`
+	ComponentType    string            `json:"_component"`
+	ComponentID      string            `json:"_component_id"`
+	State            string            `json:"_state"`
+	Action           string            `json:"_action"`
+	VpcAWSID         string            `json:"vpc_aws_id"`
+	Name             string            `json:"name"`
+	Subnet           string            `json:"subnet"`
+	AutoRemove       bool              `json:"auto_remove"`
+	Tags             map[string]string `json:"tags"`
+	DatacenterType   string            `json:"datacenter_type,omitempty"`
+	DatacenterName   string            `json:"datacenter_name,omitempty"`
+	DatacenterRegion string            `json:"datacenter_region"`
+	AccessKeyID      string            `json:"aws_access_key_id"`
+	SecretAccessKey  string            `json:"aws_secret_access_key"`
+	Service          string            `json:"service"`
 }
 
 // GetID : returns the component's ID
@@ -90,12 +88,12 @@ func (v *Vpc) Diff(c graph.Component) bool {
 
 // Update : updates the provider returned values of a component
 func (v *Vpc) Update(c graph.Component) {
-	v.setDefaultVariables()
+	v.SetDefaultVariables()
 }
 
 // Rebuild : rebuilds the component's internal state, such as templated values
 func (v *Vpc) Rebuild(g *graph.Graph) {
-	v.setDefaultVariables()
+	v.SetDefaultVariables()
 }
 
 // Dependencies : returns a list of component id's upon which the component depends
@@ -113,9 +111,10 @@ func (v *Vpc) IsStateful() bool {
 	return true
 }
 
-func (v *Vpc) setDefaultVariables() {
-	v.ComponentType = "instance"
-	v.ComponentID = "instance::" + v.Name
+// SetDefaultVariables : sets up the default template variables for a component
+func (v *Vpc) SetDefaultVariables() {
+	v.ComponentType = TYPEVPC
+	v.ComponentID = TYPEVPC + TYPEDELIMITER + v.Name
 	v.ProviderType = PROVIDERTYPE
 	v.DatacenterType = DATACENTERTYPE
 	v.DatacenterRegion = DATACENTERREGION

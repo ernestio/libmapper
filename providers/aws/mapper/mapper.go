@@ -12,18 +12,28 @@ import (
 	"github.com/r3labs/graph"
 )
 
+// Mapper : implements the generic mapper structure
 type Mapper struct{}
 
+// New : returns a new aws mapper
+func New() *Mapper {
+	return &Mapper{}
+}
+
+// ConvertDefinition : converts the input yaml definition to a graph format
 func (m Mapper) ConvertDefinition(gd libmapper.Definition) (*graph.Graph, error) {
 	g := graph.New()
 
-	d, ok := gd.(def.Definition)
+	d, ok := gd.(*def.Definition)
 	if ok != true {
 		return g, errors.New("Could not convert generic definition into aws format.")
 	}
 
 	// Map basic component values from definition
-	mapComponents(d, g)
+	err := mapComponents(d, g)
+	if err != nil {
+		return g, err
+	}
 
 	for _, component := range g.Components {
 		// Build internal & template values
@@ -33,14 +43,10 @@ func (m Mapper) ConvertDefinition(gd libmapper.Definition) (*graph.Graph, error)
 			}
 		}
 
-		// Rebuild internal values
-		err := component.Rebuild(g)
-		if err != nil {
-			return g, err
-		}
+		component.Rebuild(g)
 
 		// Validate Components
-		err = component.Validate()
+		err := component.Validate()
 		if err != nil {
 			return g, err
 		}
@@ -49,18 +55,39 @@ func (m Mapper) ConvertDefinition(gd libmapper.Definition) (*graph.Graph, error)
 	return g, nil
 }
 
+// ConvertGraph : converts the service graph into an input yaml format
 func (m Mapper) ConvertGraph(g *graph.Graph) (libmapper.Definition, error) {
 	var d libmapper.Definition
 
 	return d, nil
 }
 
-func (m Mapper) SupportedComponents() []string {
-	var supported []string
-	return supported
+// LoadDefinition : returns an aws type definition
+func (m Mapper) LoadDefinition(gd map[string]interface{}) (libmapper.Definition, error) {
+	var d def.Definition
+
+	err := d.LoadMap(gd)
+
+	return &d, err
+}
+
+// LoadGraph : returns a generic interal graph
+func (m Mapper) LoadGraph(gg map[string]interface{}) (*graph.Graph, error) {
+	g := graph.New()
+
+	return g, nil
 }
 
 func mapComponents(d *def.Definition, g *graph.Graph) error {
+	// Map basic component values from definition
+
+	for _, vpc := range MapVpcs(d) {
+		err := g.AddComponent(vpc)
+		if err != nil {
+			return err
+		}
+	}
+
 	for _, network := range MapNetworks(d) {
 		err := g.AddComponent(network)
 		if err != nil {
@@ -68,11 +95,28 @@ func mapComponents(d *def.Definition, g *graph.Graph) error {
 		}
 	}
 
-	// Map basic component values from definition
 	for _, instance := range MapInstances(d) {
 		err := g.AddComponent(instance)
 		if err != nil {
 			return err
 		}
 	}
+
+	for _, securitygroup := range MapSecurityGroups(d) {
+		err := g.AddComponent(securitygroup)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func mapTags(name, service string) map[string]string {
+	tags := make(map[string]string)
+
+	tags["Name"] = name
+	tags["ernest.service"] = service
+
+	return tags
 }

@@ -40,8 +40,6 @@ type SecurityGroup struct {
 	Vpc              string            `json:"vpc"`
 	VpcID            string            `json:"vpc_id"`
 	Service          string            `json:"service"`
-	Status           string            `json:"status"`
-	Exists           bool
 }
 
 // GetID : returns the component's ID
@@ -131,12 +129,12 @@ func (sg *SecurityGroup) Update(c graph.Component) {
 		sg.SecurityGroupAWSID = csg.SecurityGroupAWSID
 	}
 
-	sg.setDefaultVariables()
+	sg.SetDefaultVariables()
 }
 
 // Rebuild : rebuilds the component's internal state, such as templated values
 func (sg *SecurityGroup) Rebuild(g *graph.Graph) {
-	sg.setDefaultVariables()
+	sg.SetDefaultVariables()
 }
 
 // Dependencies : returns a list of component id's upon which the component depends
@@ -172,9 +170,10 @@ func (sg *SecurityGroup) IsStateful() bool {
 	return true
 }
 
-func (sg *SecurityGroup) setDefaultVariables() {
-	sg.ComponentType = "security_group"
-	sg.ComponentID = "security_group::" + sg.Name
+// SetDefaultVariables : sets up the default template variables for a component
+func (sg *SecurityGroup) SetDefaultVariables() {
+	sg.ComponentType = TYPESECURITYGROUP
+	sg.ComponentID = TYPESECURITYGROUP + TYPEDELIMITER + sg.Name
 	sg.ProviderType = PROVIDERTYPE
 	sg.DatacenterName = DATACENTERNAME
 	sg.DatacenterType = DATACENTERTYPE

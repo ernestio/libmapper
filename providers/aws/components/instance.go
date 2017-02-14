@@ -52,8 +52,6 @@ type Instance struct {
 	Vpc                 string            `json:"vpc"`
 	VpcID               string            `json:"vpc_id"`
 	Service             string            `json:"service"`
-	Status              string            `json:"status"`
-	Exists              bool
 }
 
 // GetID : returns the component's ID
@@ -147,7 +145,7 @@ func (i *Instance) Update(c graph.Component) {
 		i.ElasticIPAWSID = ci.ElasticIPAWSID
 	}
 
-	i.setDefaultVariables()
+	i.SetDefaultVariables()
 }
 
 // Rebuild : rebuilds the component's internal state, such as templated values
@@ -174,12 +172,20 @@ func (i *Instance) Rebuild(g *graph.Graph) {
 		}
 	}
 
-	i.setDefaultVariables()
+	i.SetDefaultVariables()
 }
 
 // Dependencies : returns a list of component id's upon which the component depends
 func (i *Instance) Dependencies() []string {
-	return []string{}
+	var deps []string
+
+	for _, sg := range i.SecurityGroups {
+		deps = append(deps, TYPESECURITYGROUP+TYPEDELIMITER+sg)
+	}
+
+	deps = append(deps, TYPENETWORK+TYPEDELIMITER+i.Network)
+
+	return deps
 }
 
 // Validate : validates the components values
@@ -212,9 +218,10 @@ func (i *Instance) IsStateful() bool {
 	return true
 }
 
-func (i *Instance) setDefaultVariables() {
-	i.ComponentType = "instance"
-	i.ComponentID = "instance::" + i.Name
+// SetDefaultVariables : sets up the default template variables for a component
+func (i *Instance) SetDefaultVariables() {
+	i.ComponentType = TYPEINSTANCE
+	i.ComponentID = TYPEINSTANCE + TYPEDELIMITER + i.Name
 	i.ProviderType = PROVIDERTYPE
 	i.DatacenterName = DATACENTERNAME
 	i.DatacenterType = DATACENTERTYPE

@@ -13,7 +13,7 @@ import (
 )
 
 // MapInstances ...
-func MapInstances(d definition.Definition) []*components.Instance {
+func MapInstances(d *definition.Definition) []*components.Instance {
 	var is []*components.Instance
 
 	for _, instance := range d.Instances {
@@ -23,7 +23,7 @@ func MapInstances(d definition.Definition) []*components.Instance {
 		for i := 0; i < instance.Count; i++ {
 			name := instance.Name + "-" + strconv.Itoa(i+1)
 
-			is = append(is, &components.Instance{
+			ci := &components.Instance{
 				Name:            name,
 				Type:            instance.Type,
 				Image:           instance.Image,
@@ -34,7 +34,11 @@ func MapInstances(d definition.Definition) []*components.Instance {
 				SecurityGroups:  instance.SecurityGroups,
 				UserData:        instance.UserData,
 				Tags:            mapInstanceTags(name, d.Name, instance.Name),
-			})
+			}
+
+			ci.SetDefaultVariables()
+
+			is = append(is, ci)
 		}
 	}
 

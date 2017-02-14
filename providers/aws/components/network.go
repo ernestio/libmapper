@@ -33,8 +33,6 @@ type Network struct {
 	Vpc              string            `json:"vpc"`
 	VpcID            string            `json:"vpc_id"`
 	Service          string            `json:"service"`
-	Status           string            `json:"status"`
-	Exists           bool
 }
 
 // GetID : returns the component's ID
@@ -110,12 +108,12 @@ func (n *Network) Update(c graph.Component) {
 		n.AvailabilityZone = cn.AvailabilityZone
 	}
 
-	n.setDefaultVariables()
+	n.SetDefaultVariables()
 }
 
 // Rebuild : rebuilds the component's internal state, such as templated values
 func (n *Network) Rebuild(g *graph.Graph) {
-	n.setDefaultVariables()
+	n.SetDefaultVariables()
 }
 
 // Dependencies : returns a list of component id's upon which the component depends
@@ -146,9 +144,10 @@ func (n *Network) IsStateful() bool {
 	return true
 }
 
-func (n *Network) setDefaultVariables() {
-	n.ComponentType = "network"
-	n.ComponentID = "network::" + n.Name
+// SetDefaultVariables : sets up the default template variables for a component
+func (n *Network) SetDefaultVariables() {
+	n.ComponentType = TYPENETWORK
+	n.ComponentID = TYPENETWORK + TYPEDELIMITER + n.Name
 	n.ProviderType = PROVIDERTYPE
 	n.DatacenterName = DATACENTERNAME
 	n.DatacenterType = DATACENTERTYPE
