@@ -50,6 +50,11 @@ func (m Mapper) ConvertDefinition(gd libmapper.Definition) (*graph.Graph, error)
 		if err != nil {
 			return g, err
 		}
+
+		// Build dependencies
+		for _, dep := range component.Dependencies() {
+			g.Connect(dep, component.GetID())
+		}
 	}
 
 	return g, nil

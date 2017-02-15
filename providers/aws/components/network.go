@@ -113,6 +113,17 @@ func (n *Network) Update(c graph.Component) {
 
 // Rebuild : rebuilds the component's internal state, such as templated values
 func (n *Network) Rebuild(g *graph.Graph) {
+	if n.Vpc == "" && n.VpcID != "" {
+		v := g.ComponentByProviderID(n.VpcID)
+		if v != nil {
+			n.Vpc = v.GetName()
+		}
+	}
+
+	if n.Vpc != "" && n.VpcID == "" {
+		n.VpcID = templVpcID(n.Vpc)
+	}
+
 	n.SetDefaultVariables()
 }
 

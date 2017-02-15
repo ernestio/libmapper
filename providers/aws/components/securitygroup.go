@@ -134,6 +134,17 @@ func (sg *SecurityGroup) Update(c graph.Component) {
 
 // Rebuild : rebuilds the component's internal state, such as templated values
 func (sg *SecurityGroup) Rebuild(g *graph.Graph) {
+	if sg.Vpc == "" && sg.VpcID != "" {
+		v := g.ComponentByProviderID(sg.VpcID)
+		if v != nil {
+			sg.Vpc = v.GetName()
+		}
+	}
+
+	if sg.Vpc != "" && sg.VpcID == "" {
+		sg.VpcID = templVpcID(sg.Vpc)
+	}
+
 	sg.SetDefaultVariables()
 }
 

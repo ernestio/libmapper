@@ -49,8 +49,6 @@ type Instance struct {
 	DatacenterRegion    string            `json:"datacenter_region"`
 	AccessKeyID         string            `json:"aws_access_key_id"`
 	SecretAccessKey     string            `json:"aws_secret_access_key"`
-	Vpc                 string            `json:"vpc"`
-	VpcID               string            `json:"vpc_id"`
 	Service             string            `json:"service"`
 }
 
@@ -155,6 +153,10 @@ func (i *Instance) Rebuild(g *graph.Graph) {
 		if n != nil {
 			i.Network = n.GetName()
 		}
+	}
+
+	if i.Network != "" && i.NetworkAWSID == "" {
+		i.NetworkAWSID = templSubnetID(i.Network)
 	}
 
 	if len(i.SecurityGroups) > len(i.SecurityGroupAWSIDs) {

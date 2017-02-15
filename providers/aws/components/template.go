@@ -14,6 +14,14 @@ const (
 	VPCID            = "$(vpcs.items.0.vpc_id)"
 )
 
+func templVpcID(vpc string) string {
+	return `$(components.#[_component_id="` + "vpc::" + vpc + `"].vpc_aws_id)`
+}
+
 func templSecurityGroupID(sg string) string {
 	return `$(components.#[_component_id="` + "security_group::" + sg + `"].security_group_aws_id)`
+}
+
+func templSubnetID(nw string) string {
+	return `$(components.#[_component_id="` + "network::" + nw + `"].network_aws_id)`
 }
