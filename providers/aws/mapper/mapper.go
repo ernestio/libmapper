@@ -8,9 +8,13 @@ import (
 	"errors"
 
 	"github.com/ernestio/libmapper"
+	"github.com/ernestio/libmapper/providers/aws/components"
 	def "github.com/ernestio/libmapper/providers/aws/definition"
 	"github.com/r3labs/graph"
 )
+
+// SUPPORTEDCOMPONENTS represents all
+var SUPPORTEDCOMPONENTS = []string{"vpc", "network", "instance", "security_group", "nat_gateway", "elb", "ebs", "s3", "route53", "rds_instance", "rds_cluster"}
 
 // Mapper : implements the generic mapper structure
 type Mapper struct{}
@@ -81,6 +85,21 @@ func (m Mapper) LoadGraph(gg map[string]interface{}) (*graph.Graph, error) {
 	g := graph.New()
 
 	return g, nil
+}
+
+// CreateImportGraph : creates a new graph with component queries used to import components from a provider
+func (m Mapper) CreateImportGraph(service, datacenter string) *graph.Graph {
+	g := graph.New()
+	params := make(map[string]string)
+
+	params["ernest.service"] = service
+
+	for _, ctype := range SUPPORTEDCOMPONENTS {
+		q := components.NewQuery(ctype, params)
+		g.AddComponent(q)
+	}
+
+	return g
 }
 
 func mapComponents(d *def.Definition, g *graph.Graph) error {

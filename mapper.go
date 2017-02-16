@@ -8,5 +8,5 @@ type Mapper interface {
 	ConvertGraph(*graph.Graph) (Definition, error)
 	LoadDefinition(map[string]interface{}) (Definition, error)
 	LoadGraph(map[string]interface{}) (*graph.Graph, error)
-	//SupportedComponents() []string // returns a list of supported components for constructing an import query
+	CreateImportGraph() *graph.Graph
 }
