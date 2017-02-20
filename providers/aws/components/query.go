@@ -8,7 +8,7 @@ import "github.com/r3labs/graph"
 
 // Query : mapping of an query component
 type Query struct {
-	ProviderType     string            `json:"_type"`
+	ProviderType     string            `json:"_provider"`
 	ComponentType    string            `json:"_component"`
 	ComponentID      string            `json:"_component_id"`
 	State            string            `json:"_state"`
@@ -75,6 +75,11 @@ func (q *Query) GetGroup() string {
 // GetTags returns a components tags
 func (q *Query) GetTags() map[string]string {
 	return q.Tags
+}
+
+// GetTag returns a components tag
+func (q *Query) GetTag(tag string) string {
+	return ""
 }
 
 // Diff : diff's the component against another component of the same type

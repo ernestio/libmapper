@@ -21,7 +21,7 @@ type InstanceVolume struct {
 
 // Instance : mapping of an instance component
 type Instance struct {
-	ProviderType        string            `json:"_type"`
+	ProviderType        string            `json:"_provider"`
 	ComponentType       string            `json:"_component"`
 	ComponentID         string            `json:"_component_id"`
 	State               string            `json:"_state"`
@@ -107,6 +107,11 @@ func (i *Instance) GetTags() map[string]string {
 	return i.Tags
 }
 
+// GetTag returns a components tag
+func (i *Instance) GetTag(tag string) string {
+	return i.Tags[tag]
+}
+
 // Diff : diff's the component against another component of the same type
 func (i *Instance) Diff(c graph.Component) bool {
 	ci, ok := c.(*Instance)
@@ -149,7 +154,7 @@ func (i *Instance) Update(c graph.Component) {
 // Rebuild : rebuilds the component's internal state, such as templated values
 func (i *Instance) Rebuild(g *graph.Graph) {
 	if i.Network == "" && i.NetworkAWSID != "" {
-		n := g.ComponentByProviderID(i.NetworkAWSID)
+		n := g.GetComponents().ByProviderID(i.NetworkAWSID)
 		if n != nil {
 			i.Network = n.GetName()
 		}
@@ -167,7 +172,7 @@ func (i *Instance) Rebuild(g *graph.Graph) {
 
 	if len(i.SecurityGroupAWSIDs) > len(i.SecurityGroups) {
 		for _, sgid := range i.SecurityGroupAWSIDs {
-			sg := g.ComponentByProviderID(sgid)
+			sg := g.GetComponents().ByProviderID(sgid)
 			if sg != nil {
 				i.SecurityGroups = append(i.SecurityGroups, sg.GetName())
 			}

@@ -14,7 +14,7 @@ import (
 
 // Network : Mapping of a network component
 type Network struct {
-	ProviderType     string            `json:"_type"`
+	ProviderType     string            `json:"_provider"`
 	ComponentType    string            `json:"_component"`
 	ComponentID      string            `json:"_component_id"`
 	State            string            `json:"_state"`
@@ -90,6 +90,11 @@ func (n *Network) GetTags() map[string]string {
 	return n.Tags
 }
 
+// GetTag returns a components tag
+func (n *Network) GetTag(tag string) string {
+	return n.Tags[tag]
+}
+
 // Diff : diff's the component against another component of the same type
 func (n *Network) Diff(c graph.Component) bool {
 	cn, ok := c.(*Network)
@@ -114,7 +119,7 @@ func (n *Network) Update(c graph.Component) {
 // Rebuild : rebuilds the component's internal state, such as templated values
 func (n *Network) Rebuild(g *graph.Graph) {
 	if n.Vpc == "" && n.VpcID != "" {
-		v := g.ComponentByProviderID(n.VpcID)
+		v := g.GetComponents().ByProviderID(n.VpcID)
 		if v != nil {
 			n.Vpc = v.GetName()
 		}

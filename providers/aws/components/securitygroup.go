@@ -20,7 +20,7 @@ type SecurityGroupRule struct {
 
 // SecurityGroup : Mapping of a security group component
 type SecurityGroup struct {
-	ProviderType       string `json:"_type"`
+	ProviderType       string `json:"_provider"`
 	ComponentType      string `json:"_component"`
 	ComponentID        string `json:"_component_id"`
 	State              string `json:"_state"`
@@ -97,6 +97,11 @@ func (sg *SecurityGroup) GetTags() map[string]string {
 	return sg.Tags
 }
 
+// GetTag returns a components tag
+func (sg *SecurityGroup) GetTag(tag string) string {
+	return sg.Tags[tag]
+}
+
 // Diff : diff's the component against another component of the same type
 func (sg *SecurityGroup) Diff(c graph.Component) bool {
 	csg, ok := c.(*SecurityGroup)
@@ -135,7 +140,7 @@ func (sg *SecurityGroup) Update(c graph.Component) {
 // Rebuild : rebuilds the component's internal state, such as templated values
 func (sg *SecurityGroup) Rebuild(g *graph.Graph) {
 	if sg.Vpc == "" && sg.VpcID != "" {
-		v := g.ComponentByProviderID(sg.VpcID)
+		v := g.GetComponents().ByProviderID(sg.VpcID)
 		if v != nil {
 			sg.Vpc = v.GetName()
 		}

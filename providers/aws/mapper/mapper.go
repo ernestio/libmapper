@@ -10,10 +10,11 @@ import (
 	"github.com/ernestio/libmapper"
 	"github.com/ernestio/libmapper/providers/aws/components"
 	def "github.com/ernestio/libmapper/providers/aws/definition"
+	"github.com/mitchellh/mapstructure"
 	"github.com/r3labs/graph"
 )
 
-// SUPPORTEDCOMPONENTS represents all
+// SUPPORTEDCOMPONENTS represents all component types supported by ernest
 var SUPPORTEDCOMPONENTS = []string{"vpc", "network", "instance", "security_group", "nat_gateway", "elb", "ebs", "s3", "route53", "rds_instance", "rds_cluster"}
 
 // Mapper : implements the generic mapper structure
@@ -39,25 +40,25 @@ func (m Mapper) ConvertDefinition(gd libmapper.Definition) (*graph.Graph, error)
 		return g, err
 	}
 
-	for _, component := range g.Components {
+	for _, c := range g.Components {
 		// Build internal & template values
-		for _, dep := range component.Dependencies() {
+		for _, dep := range c.Dependencies() {
 			if g.HasComponent(dep) != true {
 				return g, errors.New("Could not resolve component dependency: " + dep)
 			}
 		}
 
-		component.Rebuild(g)
+		c.Rebuild(g)
 
 		// Validate Components
-		err := component.Validate()
+		err := c.Validate()
 		if err != nil {
 			return g, err
 		}
 
 		// Build dependencies
-		for _, dep := range component.Dependencies() {
-			g.Connect(dep, component.GetID())
+		for _, dep := range c.Dependencies() {
+			g.Connect(dep, c.GetID())
 		}
 	}
 
@@ -66,7 +67,27 @@ func (m Mapper) ConvertDefinition(gd libmapper.Definition) (*graph.Graph, error)
 
 // ConvertGraph : converts the service graph into an input yaml format
 func (m Mapper) ConvertGraph(g *graph.Graph) (libmapper.Definition, error) {
-	var d libmapper.Definition
+	var d def.Definition
+
+	for _, c := range g.Components {
+		c.Rebuild(g)
+
+		for _, dep := range c.Dependencies() {
+			if g.HasComponent(dep) != true {
+				return g, errors.New("Could not resolve component dependency: " + dep)
+			}
+		}
+
+		err := c.Validate()
+		if err != nil {
+			return d, err
+		}
+	}
+
+	d.Vpcs = MapDefinitionVpcs(g)
+	d.Networks = MapDefinitionNetworks(g)
+	d.Instances = MapDefinitionInstances(g)
+	d.SecurityGroups = MapDefinitionSecurityGroups(g)
 
 	return d, nil
 }
@@ -84,18 +105,42 @@ func (m Mapper) LoadDefinition(gd map[string]interface{}) (libmapper.Definition,
 func (m Mapper) LoadGraph(gg map[string]interface{}) (*graph.Graph, error) {
 	g := graph.New()
 
+	for i := 0; i < len(g.Components); i++ {
+		gc := g.Components[i].(*graph.GenericComponent)
+
+		var c graph.Component
+
+		switch gc.GetType() {
+		case "vpc":
+			c = &components.Vpc{}
+		case "network":
+			c = &components.Network{}
+		case "instance":
+			c = &components.Instance{}
+		case "security_group":
+			c = &components.SecurityGroup{}
+		}
+
+		err := mapstructure.Decode(i, c)
+		if err != nil {
+			return g, err
+		}
+
+		g.Components[i] = c
+	}
+
 	return g, nil
 }
 
 // CreateImportGraph : creates a new graph with component queries used to import components from a provider
-func (m Mapper) CreateImportGraph(service, datacenter string) *graph.Graph {
+func (m Mapper) CreateImportGraph(service string, credentials map[string]string) *graph.Graph {
 	g := graph.New()
 	params := make(map[string]string)
 
 	params["ernest.service"] = service
 
 	for _, ctype := range SUPPORTEDCOMPONENTS {
-		q := components.NewQuery(ctype, params)
+		q := MapQuery(ctype, params)
 		g.AddComponent(q)
 	}
 

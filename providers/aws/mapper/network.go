@@ -4,8 +4,11 @@
 
 package mapper
 
-import "github.com/ernestio/libmapper/providers/aws/components"
-import "github.com/ernestio/libmapper/providers/aws/definition"
+import (
+	"github.com/ernestio/libmapper/providers/aws/components"
+	"github.com/ernestio/libmapper/providers/aws/definition"
+	"github.com/r3labs/graph"
+)
 
 // MapNetworks ...
 func MapNetworks(d *definition.Definition) []*components.Network {
@@ -27,6 +30,25 @@ func MapNetworks(d *definition.Definition) []*components.Network {
 	}
 
 	return ns
+}
+
+// MapDefinitionNetworks : Maps output networks into a definition defined networks
+func MapDefinitionNetworks(g *graph.Graph) []definition.Network {
+	var nws []definition.Network
+
+	for _, c := range g.GetComponents().ByType("network") {
+		n := c.(*components.Network)
+
+		nws = append(nws, definition.Network{
+			Name:             n.Name,
+			Subnet:           n.Subnet,
+			Public:           n.IsPublic,
+			AvailabilityZone: n.AvailabilityZone,
+			NatGateway:       n.Tags["ernest.nat_gateway"],
+		})
+	}
+
+	return nws
 }
 
 func mapNetworkTags(name, service, gateway string) map[string]string {

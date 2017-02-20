@@ -8,7 +8,7 @@ import "github.com/r3labs/graph"
 
 // Vpc : mapping of an instance component
 type Vpc struct {
-	ProviderType     string            `json:"_type"`
+	ProviderType     string            `json:"_provider"`
 	ComponentType    string            `json:"_component"`
 	ComponentID      string            `json:"_component_id"`
 	State            string            `json:"_state"`
@@ -79,6 +79,11 @@ func (v *Vpc) GetGroup() string {
 // GetTags returns a components tags
 func (v *Vpc) GetTags() map[string]string {
 	return v.Tags
+}
+
+// GetTag returns a components tag
+func (v *Vpc) GetTag(tag string) string {
+	return v.Tags[tag]
 }
 
 // Diff : diff's the component against another component of the same type

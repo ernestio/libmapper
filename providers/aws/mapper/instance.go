@@ -10,6 +10,7 @@ import (
 
 	"github.com/ernestio/libmapper/providers/aws/components"
 	"github.com/ernestio/libmapper/providers/aws/definition"
+	"github.com/r3labs/graph"
 )
 
 // MapInstances ...
@@ -45,8 +46,56 @@ func MapInstances(d *definition.Definition) []*components.Instance {
 	return is
 }
 
-// SecurityGroupAWSIDs: mapInstanceSecurityGroupIDs(sgroups)
-// NetworkAWSID:        `$(networks.items.#[name="` + d.GeneratedName() + instance.Network + `"].network_aws_id)`,
+// MapDefinitionInstances : Maps output instances into a definition defined instances
+func MapDefinitionInstances(g *graph.Graph) []definition.Instance {
+	var instances []definition.Instance
+
+	ci := g.GetComponents().ByType("instance")
+
+	for _, ig := range ci.TagValues("ernest.instance_group") {
+		is := ci.ByGroup("ernest.instance_group", ig)
+
+		if len(is) < 1 {
+			continue
+		}
+
+		firstInstance := is[0].(*components.Instance)
+		elastic := false
+
+		if firstInstance.ElasticIP != "" {
+			elastic = true
+		}
+
+		instance := definition.Instance{
+			Name:           ig,
+			Type:           firstInstance.Type,
+			Image:          firstInstance.Image,
+			Network:        firstInstance.Network,
+			StartIP:        firstInstance.IP,
+			KeyPair:        firstInstance.KeyPair,
+			SecurityGroups: firstInstance.SecurityGroups,
+			ElasticIP:      elastic,
+			Count:          len(is),
+		}
+
+		for _, vol := range firstInstance.Volumes {
+			vc := g.GetComponents().ByProviderID(vol.VolumeAWSID)
+			if vc == nil {
+				continue
+			}
+
+			instance.Volumes = append(instance.Volumes, definition.InstanceVolume{
+				Device: vol.Device,
+				Volume: vc.GetTag("ernest.volume_group"),
+			})
+		}
+
+		instances = append(instances, instance)
+
+	}
+
+	return instances
+}
 
 func mapInstanceTags(name, service, instanceGroup string) map[string]string {
 	tags := make(map[string]string)

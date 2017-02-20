@@ -4,8 +4,11 @@
 
 package mapper
 
-import "github.com/ernestio/libmapper/providers/aws/components"
-import "github.com/ernestio/libmapper/providers/aws/definition"
+import (
+	"github.com/ernestio/libmapper/providers/aws/components"
+	"github.com/ernestio/libmapper/providers/aws/definition"
+	"github.com/r3labs/graph"
+)
 
 // MapVpcs ...
 func MapVpcs(d *definition.Definition) []*components.Vpc {
@@ -19,9 +22,31 @@ func MapVpcs(d *definition.Definition) []*components.Vpc {
 			AutoRemove: vpc.AutoRemove,
 		}
 
+		if vpc.ID != "" {
+			cv.SetAction("none")
+		}
+
 		cv.SetDefaultVariables()
 
 		vpcs = append(vpcs, cv)
+	}
+
+	return vpcs
+}
+
+// MapDefinitionVpcs : Maps output networks into a definition defined networks
+func MapDefinitionVpcs(g *graph.Graph) []definition.Vpc {
+	var vpcs []definition.Vpc
+
+	for _, c := range g.GetComponents().ByType("vpc") {
+		v := c.(*components.Vpc)
+
+		vpcs = append(vpcs, definition.Vpc{
+			ID:         v.VpcAWSID,
+			Name:       v.Name,
+			Subnet:     v.Subnet,
+			AutoRemove: false,
+		})
 	}
 
 	return vpcs
