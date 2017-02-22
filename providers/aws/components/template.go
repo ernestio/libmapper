@@ -8,10 +8,9 @@ const (
 	PROVIDERTYPE     = "$(datacenters.items.0.type)"
 	DATACENTERNAME   = "$(datacenters.items.0.name)"
 	DATACENTERTYPE   = "$(datacenters.items.0.type)"
-	ACCESSKEYID      = "$(datacenters.items.0.aws_access_key_id)"
-	SECRETACCESSKEY  = "$(datacenters.items.0.aws_secret_access_key)"
-	DATACENTERREGION = "$(datacenters.items.0.region)"
-	VPCID            = "$(vpcs.items.0.vpc_id)"
+	ACCESSKEYID      = `$(components.#[_component_id="credentials::aws"].aws_access_key_id)`
+	SECRETACCESSKEY  = `$(components.#[_component_id="credentials::aws"].aws_secret_access_key)`
+	DATACENTERREGION = `$(components.#[_component_id="credentials::aws"].region)`
 )
 
 func templVpcID(vpc string) string {

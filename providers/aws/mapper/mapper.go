@@ -135,7 +135,7 @@ func (m Mapper) LoadGraph(gg map[string]interface{}) (*graph.Graph, error) {
 }
 
 // CreateImportGraph : creates a new graph with component queries used to import components from a provider
-func (m Mapper) CreateImportGraph(service string, credentials map[string]interface{}) *graph.Graph {
+func (m Mapper) CreateImportGraph(service string) *graph.Graph {
 	g := graph.New()
 	params := make(map[string]string)
 
@@ -145,9 +145,6 @@ func (m Mapper) CreateImportGraph(service string, credentials map[string]interfa
 		q := MapQuery(ctype, params)
 		g.AddComponent(q)
 	}
-
-	creds := convertCredentials(credentials)
-	g.AddComponent(&creds)
 
 	return g
 }
@@ -193,8 +190,4 @@ func mapTags(name, service string) map[string]string {
 	tags["ernest.service"] = service
 
 	return tags
-}
-
-func convertCredentials(credentials map[string]interface{}) graph.GenericComponent {
-	return credentials
 }

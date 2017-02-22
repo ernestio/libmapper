@@ -8,9 +8,13 @@ import "github.com/ernestio/libmapper/providers/aws/components"
 
 // MapQuery returns a new query
 func MapQuery(ctype string, values map[string]string) *components.Query {
-	return &components.Query{
+	q := &components.Query{
 		ComponentType: ctype,
 		Action:        "find",
 		Tags:          values,
 	}
+
+	q.SetDefaultVariables()
+
+	return q
 }
