@@ -6,7 +6,7 @@ package mapper
 
 import "github.com/ernestio/libmapper/providers/aws/components"
 
-// NewQuery returns a new query
+// MapQuery returns a new query
 func MapQuery(ctype string, values map[string]string) *components.Query {
 	return &components.Query{
 		ComponentType: ctype,

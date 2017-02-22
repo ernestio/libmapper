@@ -8,5 +8,5 @@ type Mapper interface {
 	ConvertGraph(*graph.Graph) (Definition, error)
 	LoadDefinition(map[string]interface{}) (Definition, error)
 	LoadGraph(map[string]interface{}) (*graph.Graph, error)
-	CreateImportGraph() *graph.Graph
+	CreateImportGraph(string, map[string]interface{}) *graph.Graph
 }
