@@ -1,7 +1,7 @@
 package libmapper
 
 import (
-	"github.com/r3labs/graph"
+	graph "gopkg.in/r3labs/graph.v2"
 )
 
 // Mapper : interface for each provider mapper to satisfy. A mapper

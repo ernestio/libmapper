@@ -9,7 +9,7 @@ import (
 	"net"
 	"reflect"
 
-	"github.com/r3labs/graph"
+	graph "gopkg.in/r3labs/graph.v2"
 )
 
 // InstanceVolume ...

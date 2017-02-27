@@ -7,7 +7,7 @@ package components
 import (
 	"errors"
 
-	"github.com/r3labs/graph"
+	graph "gopkg.in/r3labs/graph.v2"
 )
 
 // SecurityGroupRule ...

@@ -4,7 +4,9 @@
 
 package components
 
-import "github.com/r3labs/graph"
+import (
+	graph "gopkg.in/r3labs/graph.v2"
+)
 
 // Vpc : mapping of an instance component
 type Vpc struct {

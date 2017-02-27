@@ -4,7 +4,9 @@
 
 package components
 
-import "github.com/r3labs/graph"
+import (
+	graph "gopkg.in/r3labs/graph.v2"
+)
 
 // Query : mapping of an query component
 type Query struct {
