@@ -1,6 +1,8 @@
 package libmapper
 
-import "github.com/r3labs/graph"
+import (
+	"github.com/r3labs/graph"
+)
 
 // Mapper : interface for each provider mapper to satisfy. A mapper
 // is basically managing all translations between a Definition (the

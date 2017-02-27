@@ -31,7 +31,7 @@ func (m Mapper) ConvertDefinition(gd libmapper.Definition) (*graph.Graph, error)
 
 	d, ok := gd.(*def.Definition)
 	if ok != true {
-		return g, errors.New("Could not convert generic definition into aws format.")
+		return g, errors.New("Could not convert generic definition into aws format")
 	}
 
 	// Map basic component values from definition
