@@ -25,5 +25,5 @@ type Mapper interface {
 	LoadGraph(map[string]interface{}) (*graph.Graph, error)
 
 	// CreateImportGraph : Creates an import graph based on the specified service_id
-	CreateImportGraph(string) *graph.Graph
+	CreateImportGraph([]string) *graph.Graph
 }
