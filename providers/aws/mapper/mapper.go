@@ -137,14 +137,14 @@ func (m Mapper) LoadGraph(gg map[string]interface{}) (*graph.Graph, error) {
 // CreateImportGraph : creates a new graph with component queries used to import components from a provider
 func (m Mapper) CreateImportGraph(params []string) *graph.Graph {
 	g := graph.New()
-	params := make(map[string]string)
+	filter := make(map[string]string)
 
 	if len(params) > 0 {
-		params["ernest.service"] = params[0]
+		filter["ernest.service"] = params[0]
 	}
 
 	for _, ctype := range SUPPORTEDCOMPONENTS {
-		q := MapQuery(ctype, params)
+		q := MapQuery(ctype, filter)
 		g.AddComponent(q)
 	}
 
