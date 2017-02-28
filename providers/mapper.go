@@ -13,7 +13,7 @@ import (
 func NewMapper(t string) (m libmapper.Mapper) {
 	switch t {
 	case "aws":
-		m = *aws.New()
+		m = aws.New()
 	}
 
 	return m
