@@ -21,7 +21,7 @@ var SUPPORTEDCOMPONENTS = []string{"vpc", "network", "instance", "security_group
 type Mapper struct{}
 
 // New : returns a new aws mapper
-func New() *libmapper.Mapper {
+func New() libmapper.Mapper {
 	return &Mapper{}
 }
 
