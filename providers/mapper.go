@@ -12,7 +12,7 @@ import (
 // NewMapper : Get a new mapper based on a specified type
 func NewMapper(t string) (m libmapper.Mapper) {
 	switch t {
-	case "aws":
+	case "aws", "aws-fake":
 		m = aws.New()
 	}
 
