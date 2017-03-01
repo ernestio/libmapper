@@ -5,9 +5,15 @@
 package components
 
 const (
-	PROVIDERTYPE     = "$(datacenters.items.0.type)"
-	DATACENTERNAME   = "$(datacenters.items.0.name)"
-	DATACENTERTYPE   = "$(datacenters.items.0.type)"
+	TYPEVPC           = "vpc"
+	TYPENETWORK       = "network"
+	TYPEINSTANCE      = "instance"
+	TYPESECURITYGROUP = "security_group"
+	TYPEDELIMITER     = "::"
+
+	PROVIDERTYPE     = `$(components.#[_component_id="credentials::aws"]._provider)`
+	DATACENTERNAME   = `$(components.#[_component_id="credentials::aws"].name)`
+	DATACENTERTYPE   = `$(components.#[_component_id="credentials::aws"]._provider)`
 	ACCESSKEYID      = `$(components.#[_component_id="credentials::aws"].aws_access_key_id)`
 	SECRETACCESSKEY  = `$(components.#[_component_id="credentials::aws"].aws_secret_access_key)`
 	DATACENTERREGION = `$(components.#[_component_id="credentials::aws"].region)`

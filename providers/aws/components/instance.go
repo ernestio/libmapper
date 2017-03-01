@@ -6,7 +6,6 @@ package components
 
 import (
 	"errors"
-	"net"
 	"reflect"
 
 	graph "gopkg.in/r3labs/graph.v2"
@@ -30,7 +29,7 @@ type Instance struct {
 	Name                string            `json:"name"`
 	Type                string            `json:"instance_type"`
 	Image               string            `json:"image"`
-	IP                  net.IP            `json:"ip"`
+	IP                  string            `json:"ip"`
 	PublicIP            string            `json:"public_ip"`
 	ElasticIP           string            `json:"elastic_ip"`
 	ElasticIPAWSID      *string           `json:"elastic_ip_aws_id,omitempty"`

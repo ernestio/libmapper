@@ -26,4 +26,7 @@ type Mapper interface {
 
 	// CreateImportGraph : Creates an import graph based on the specified service_id
 	CreateImportGraph([]string) *graph.Graph
+
+	// ProviderCredentials : Returns a provider specific mapped component
+	ProviderCredentials(map[string]interface{}) graph.Component
 }

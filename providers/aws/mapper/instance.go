@@ -19,7 +19,7 @@ func MapInstances(d *definition.Definition) []*components.Instance {
 
 	for _, instance := range d.Instances {
 		ip := make(net.IP, net.IPv4len)
-		copy(ip, instance.StartIP.To4())
+		copy(ip, net.ParseIP(instance.StartIP))
 
 		for i := 0; i < instance.Count; i++ {
 			name := instance.Name + "-" + strconv.Itoa(i+1)
@@ -29,7 +29,7 @@ func MapInstances(d *definition.Definition) []*components.Instance {
 				Type:            instance.Type,
 				Image:           instance.Image,
 				Network:         instance.Network,
-				IP:              net.ParseIP(ip.String()),
+				IP:              ip.String(),
 				KeyPair:         instance.KeyPair,
 				AssignElasticIP: instance.ElasticIP,
 				SecurityGroups:  instance.SecurityGroups,
@@ -40,6 +40,9 @@ func MapInstances(d *definition.Definition) []*components.Instance {
 			ci.SetDefaultVariables()
 
 			is = append(is, ci)
+
+			// Increment IP address
+			ip[3]++
 		}
 	}
 

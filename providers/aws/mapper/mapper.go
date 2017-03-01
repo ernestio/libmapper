@@ -151,6 +151,21 @@ func (m Mapper) CreateImportGraph(params []string) *graph.Graph {
 	return g
 }
 
+// ProviderCredentials : maps aws credentials to a generic component
+func (m Mapper) ProviderCredentials(details map[string]interface{}) graph.Component {
+	credentials := make(graph.GenericComponent)
+
+	credentials["_action"] = "none"
+	credentials["_component_id"] = "credentials::aws"
+	credentials["_provider"] = details["type"]
+	credentials["name"] = details["name"]
+	credentials["region"] = details["region"]
+	credentials["aws_access_key_id"] = details["aws_access_key_id"]
+	credentials["aws_secret_access_key"] = details["aws_secret_access_key"]
+
+	return &credentials
+}
+
 func mapComponents(d *def.Definition, g *graph.Graph) error {
 	// Map basic component values from definition
 

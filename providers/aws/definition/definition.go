@@ -14,12 +14,12 @@ import (
 type Definition struct {
 	Name           string          `json:"name"`
 	Datacenter     string          `json:"datacenter"`
-	Vpcs           []Vpc           `json:"vpcs"`
+	Vpcs           []Vpc           `json:"vpcs,omitempty"`
 	Networks       []Network       `json:"networks,omitempty"`
 	Instances      []Instance      `json:"instances,omitempty"`
 	SecurityGroups []SecurityGroup `json:"security_groups,omitempty"`
-	ELBs           []ELB           `json:"loadbalancers,omitempty"`
-	EBSVolumes     []EBSVolume     `json:"ebs_volumes,omitempty"`
+	//ELBs           []ELB           `json:"loadbalancers,omitempty"`
+	//EBSVolumes     []EBSVolume     `json:"ebs_volumes,omitempty"`
 	//S3Buckets         []S3            `json:"s3_buckets,omitempty"`
 	//Route53Zones      []Route53Zone   `json:"route53_zones,omitempty"`
 	//RDSClusters       []RDSCluster    `json:"rds_clusters,omitempty"`
@@ -39,5 +39,16 @@ func (d *Definition) LoadJSON(data []byte) error {
 
 // LoadMap converts a generic definition from a map[string]interface into an aws definition
 func (d *Definition) LoadMap(i map[string]interface{}) error {
-	return mapstructure.Decode(i, d)
+	config := &mapstructure.DecoderConfig{
+		Metadata: nil,
+		Result:   d,
+		TagName:  "json",
+	}
+
+	decoder, err := mapstructure.NewDecoder(config)
+	if err != nil {
+		return err
+	}
+
+	return decoder.Decode(i)
 }

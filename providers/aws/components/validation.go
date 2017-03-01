@@ -15,7 +15,7 @@ const (
 	// PROTOCOLUDP : UDP Protocol value
 	PROTOCOLUDP = "udp"
 	// PROTOCOLANY : Any Protocol value
-	PROTOCOLANY = "any"
+	PROTOCOLANY = "-1"
 	// PROTOCOLICMP : ICMP Protocol value
 	PROTOCOLICMP = "icmp"
 	// TARGETEXTERNAL : External target
@@ -26,12 +26,6 @@ const (
 	TARGETANY = "any"
 	// AWSMAXNAME : Maximum size of an aws character
 	AWSMAXNAME = 50
-
-	TYPEVPC           = "vpc"
-	TYPENETWORK       = "network"
-	TYPEINSTANCE      = "instance"
-	TYPESECURITYGROUP = "security_group"
-	TYPEDELIMITER     = "::"
 )
 
 func validateProtocol(p string) error {

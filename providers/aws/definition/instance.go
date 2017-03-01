@@ -4,8 +4,6 @@
 
 package definition
 
-import "net"
-
 // InstanceVolume ...
 type InstanceVolume struct {
 	Volume string `json:"volume"`
@@ -19,7 +17,7 @@ type Instance struct {
 	Image          string           `json:"image"`
 	Count          int              `json:"count"`
 	Network        string           `json:"network"`
-	StartIP        net.IP           `json:"start_ip"`
+	StartIP        string           `json:"start_ip"`
 	KeyPair        string           `json:"key_pair"`
 	ElasticIP      bool             `json:"elastic_ip"`
 	SecurityGroups []string         `json:"security_groups"`
