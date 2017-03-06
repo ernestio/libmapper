@@ -18,13 +18,13 @@ type Definition struct {
 	Networks       []Network       `json:"networks,omitempty"`
 	Instances      []Instance      `json:"instances,omitempty"`
 	SecurityGroups []SecurityGroup `json:"security_groups,omitempty"`
-	//ELBs           []ELB           `json:"loadbalancers,omitempty"`
-	//EBSVolumes     []EBSVolume     `json:"ebs_volumes,omitempty"`
+	ELBs           []ELB           `json:"loadbalancers,omitempty"`
+	EBSVolumes     []EBSVolume     `json:"ebs_volumes,omitempty"`
+	NatGateways    []NatGateway    `json:"nat_gateways,omitempty"`
 	//S3Buckets         []S3            `json:"s3_buckets,omitempty"`
 	//Route53Zones      []Route53Zone   `json:"route53_zones,omitempty"`
 	//RDSClusters       []RDSCluster    `json:"rds_clusters,omitempty"`
 	//RDSInstances      []RDSInstance   `json:"rds_instances,omitempty"`
-	//NatGateways       []NatGateway    `json:"nat_gateways,omitempty"`
 }
 
 // New returns a new Definition

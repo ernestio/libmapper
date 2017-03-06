@@ -88,6 +88,9 @@ func (m Mapper) ConvertGraph(g *graph.Graph) (libmapper.Definition, error) {
 	d.Networks = MapDefinitionNetworks(g)
 	d.Instances = MapDefinitionInstances(g)
 	d.SecurityGroups = MapDefinitionSecurityGroups(g)
+	d.ELBs = MapDefinitionELBs(g)
+	d.EBSVolumes = MapDefinitionEBSVolumes(g)
+	d.NatGateways = MapDefinitionNats(g)
 
 	return d, nil
 }
@@ -121,9 +124,26 @@ func (m Mapper) LoadGraph(gg map[string]interface{}) (*graph.Graph, error) {
 			c = &components.Instance{}
 		case "security_group":
 			c = &components.SecurityGroup{}
+		case "elb":
+			c = &components.ELB{}
+		case "ebs_volume":
+			c = &components.EBSVolume{}
+		case "nat":
+			c = &components.NatGateway{}
 		}
 
-		err := mapstructure.Decode(i, c)
+		config := &mapstructure.DecoderConfig{
+			Metadata: nil,
+			Result:   c,
+			TagName:  "json",
+		}
+
+		decoder, err := mapstructure.NewDecoder(config)
+		if err != nil {
+			return g, err
+		}
+
+		err = decoder.Decode(gc)
 		if err != nil {
 			return g, err
 		}
@@ -197,6 +217,27 @@ func mapComponents(d *def.Definition, g *graph.Graph) error {
 		}
 	}
 
+	for _, elb := range MapELBs(d) {
+		err := g.AddComponent(elb)
+		if err != nil {
+			return err
+		}
+	}
+
+	for _, ebs := range MapEBSVolumes(d) {
+		err := g.AddComponent(ebs)
+		if err != nil {
+			return err
+		}
+	}
+
+	for _, nat := range MapNats(d) {
+		err := g.AddComponent(nat)
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -204,6 +245,14 @@ func mapTags(name, service string) map[string]string {
 	tags := make(map[string]string)
 
 	tags["Name"] = name
+	tags["ernest.service"] = service
+
+	return tags
+}
+
+func mapTagsServiceOnly(service string) map[string]string {
+	tags := make(map[string]string)
+
 	tags["ernest.service"] = service
 
 	return tags

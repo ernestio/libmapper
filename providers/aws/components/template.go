@@ -5,11 +5,16 @@
 package components
 
 const (
+	TYPEDELIMITER     = "::"
 	TYPEVPC           = "vpc"
 	TYPENETWORK       = "network"
 	TYPEINSTANCE      = "instance"
+	TYPEELB           = "elb"
+	TYPEEBSVOLUME     = "ebs_volume"
 	TYPESECURITYGROUP = "security_group"
-	TYPEDELIMITER     = "::"
+	TYPENATGATEWAY    = "nat"
+
+	GROUPINSTANCE = "ernest.instance_group"
 
 	PROVIDERTYPE     = `$(components.#[_component_id="credentials::aws"]._provider)`
 	DATACENTERNAME   = `$(components.#[_component_id="credentials::aws"].name)`
@@ -29,4 +34,12 @@ func templSecurityGroupID(sg string) string {
 
 func templSubnetID(nw string) string {
 	return `$(components.#[_component_id="` + "network::" + nw + `"].network_aws_id)`
+}
+
+func templInstanceID(in string) string {
+	return `$(components.#[_component_id="` + "instance::" + in + `"].instance_aws_id)`
+}
+
+func templEBSVolumeID(ebs string) string {
+	return `$(components.#[_component_id="` + "ebs_volume::" + ebs + `"].volume_aws_id)`
 }

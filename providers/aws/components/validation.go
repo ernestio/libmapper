@@ -44,3 +44,12 @@ func validatePort(port int, ptype string) error {
 
 	return nil
 }
+
+func appendUnique(s []string, v string) []string {
+	for _, x := range s {
+		if x == v {
+			return s
+		}
+	}
+	return append(s, v)
+}

@@ -178,6 +178,19 @@ func (i *Instance) Rebuild(g *graph.Graph) {
 		}
 	}
 
+	for x := 0; x < len(i.Volumes); x++ {
+		if i.Volumes[x].Volume == "" && i.Volumes[x].VolumeAWSID != "" {
+			v := g.GetComponents().ByProviderID(i.Volumes[x].VolumeAWSID)
+			if v != nil {
+				i.Volumes[x].Volume = v.GetName()
+			}
+		}
+
+		if i.Volumes[x].VolumeAWSID == "" && i.Volumes[x].Volume != "" {
+			i.Volumes[x].VolumeAWSID = templEBSVolumeID(i.Volumes[x].Volume)
+		}
+	}
+
 	i.SetDefaultVariables()
 }
 
@@ -187,6 +200,10 @@ func (i *Instance) Dependencies() []string {
 
 	for _, sg := range i.SecurityGroups {
 		deps = append(deps, TYPESECURITYGROUP+TYPEDELIMITER+sg)
+	}
+
+	for _, ebs := range i.Volumes {
+		deps = append(deps, TYPEEBSVOLUME+TYPEDELIMITER+ebs.Volume)
 	}
 
 	deps = append(deps, TYPENETWORK+TYPEDELIMITER+i.Network)
