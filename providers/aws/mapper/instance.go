@@ -8,7 +8,6 @@ import (
 	"net"
 	"strconv"
 
-	"github.com/ernestio/aws-definition-mapper/output"
 	"github.com/ernestio/libmapper/providers/aws/components"
 	"github.com/ernestio/libmapper/providers/aws/definition"
 	graph "gopkg.in/r3labs/graph.v2"
@@ -39,7 +38,7 @@ func MapInstances(d *definition.Definition) []*components.Instance {
 			}
 
 			for _, vol := range instance.Volumes {
-				v := output.InstanceVolume{
+				v := components.InstanceVolume{
 					Volume: vol.Volume + "-" + strconv.Itoa(i+1),
 					Device: vol.Device,
 				}

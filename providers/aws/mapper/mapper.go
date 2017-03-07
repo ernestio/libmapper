@@ -91,6 +91,7 @@ func (m Mapper) ConvertGraph(g *graph.Graph) (libmapper.Definition, error) {
 	d.ELBs = MapDefinitionELBs(g)
 	d.EBSVolumes = MapDefinitionEBSVolumes(g)
 	d.NatGateways = MapDefinitionNats(g)
+	d.RDSClusters = MapDefinitionRDSClusters(g)
 
 	return d, nil
 }
@@ -130,6 +131,8 @@ func (m Mapper) LoadGraph(gg map[string]interface{}) (*graph.Graph, error) {
 			c = &components.EBSVolume{}
 		case "nat":
 			c = &components.NatGateway{}
+		case "rds_cluster":
+			c = &components.RDSCluster{}
 		}
 
 		config := &mapstructure.DecoderConfig{
@@ -233,6 +236,13 @@ func mapComponents(d *def.Definition, g *graph.Graph) error {
 
 	for _, nat := range MapNats(d) {
 		err := g.AddComponent(nat)
+		if err != nil {
+			return err
+		}
+	}
+
+	for _, rds := range MapRDSClusters(d) {
+		err := g.AddComponent(rds)
 		if err != nil {
 			return err
 		}

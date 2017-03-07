@@ -21,9 +21,9 @@ type Definition struct {
 	ELBs           []ELB           `json:"loadbalancers,omitempty"`
 	EBSVolumes     []EBSVolume     `json:"ebs_volumes,omitempty"`
 	NatGateways    []NatGateway    `json:"nat_gateways,omitempty"`
+	RDSClusters    []RDSCluster    `json:"rds_clusters,omitempty"`
 	//S3Buckets         []S3            `json:"s3_buckets,omitempty"`
 	//Route53Zones      []Route53Zone   `json:"route53_zones,omitempty"`
-	//RDSClusters       []RDSCluster    `json:"rds_clusters,omitempty"`
 	//RDSInstances      []RDSInstance   `json:"rds_instances,omitempty"`
 }
 

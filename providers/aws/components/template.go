@@ -13,8 +13,10 @@ const (
 	TYPEEBSVOLUME     = "ebs_volume"
 	TYPESECURITYGROUP = "security_group"
 	TYPENATGATEWAY    = "nat"
+	TYPERDSCLUSTER    = "rds_cluster"
 
-	GROUPINSTANCE = "ernest.instance_group"
+	GROUPINSTANCE  = "ernest.instance_group"
+	GROUPEBSVOLUME = "ernest.volume_group"
 
 	PROVIDERTYPE     = `$(components.#[_component_id="credentials::aws"]._provider)`
 	DATACENTERNAME   = `$(components.#[_component_id="credentials::aws"].name)`
